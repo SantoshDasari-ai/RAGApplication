@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .feedback-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feedback-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .feedback-type {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .positive {
+            background-color: #e6ffe6;
+            color: #006600;
+        }
+        .negative {
+            background-color: #ffe6e6;
+            color: #660000;
+        }
+        .question {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .answer {
+            color: #666;
+            white-space: pre-wrap;
+        }
+        .filters {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filter-btn {
+            margin-right: 10px;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+        }
+        .filter-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
+        .stats {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="feedback-container">
+        <h1>Feedback Viewer</h1>
+        
+        <div class="stats">
+            <h3>Statistics</h3>
+            <p>Total Feedback: <span id="totalCount">0</span></p>
+            <p>Positive Feedback: <span id="positiveCount">0</span></p>
+            <p>Negative Feedback: <span id="negativeCount">0</span></p>
+        </div>
+
+        <div class="filters">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search in questions and answers...">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="positive">Positive</button>
+            <button class="filter-btn" data-filter="negative">Negative</button>
+        </div>
+
+        <div id="feedbackList">
+            {% for item in feedback %}
+            <div class="feedback-item" data-feedback-type="{{ item.feedback }}">
+                <div class="feedback-header">
+                    <span class="feedback-type {{ item.feedback }}">{{ item.feedback|title }}</span>
+                    <span class="timestamp">{{ item.timestamp }}</span>
+                </div>
+                <div class="question">Q: {{ item.question }}</div>
+                <div class="answer">A: {{ item.answer }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const feedbackItems = document.querySelectorAll('.feedback-item');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const searchInput = document.getElementById('searchInput');
+
+            // Update statistics
+            function updateStats() {
+                const total = feedbackItems.length;
+                const positive = document.querySelectorAll('[data-feedback-type="positive"]').length;
+                const negative = document.querySelectorAll('[data-feedback-type="negative"]').length;
+
+                document.getElementById('totalCount').textContent = total;
+                document.getElementById('positiveCount').textContent = positive;
+                document.getElementById('negativeCount').textContent = negative;
+            }
+
+            // Filter feedback items
+            function filterFeedback(filterType) {
+                feedbackItems.forEach(item => {
+                    if (filterType === 'all' || item.dataset.feedbackType === filterType) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // Search functionality
+            function searchFeedback(searchText) {
+                feedbackItems.forEach(item => {
+                    const question = item.querySelector('.question').textContent.toLowerCase();
+                    const answer = item.querySelector('.answer').textContent.toLowerCase();
+                    if (question.includes(searchText) || answer.includes(searchText)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // Filter button click handlers
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    filterFeedback(button.dataset.filter);
+                });
+            });
+
+            // Search input handler
+            searchInput.addEventListener('input', (e) => {
+                searchFeedback(e.target.value.toLowerCase());
+            });
+
+            // Initialize statistics
+            updateStats();
+        });
+    </script>
+</body>
+</html> 
