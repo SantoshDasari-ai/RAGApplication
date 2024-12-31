@@ -22,8 +22,8 @@ A modern knowledge management system built with RAG (Retrieval-Augmented Generat
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/rag-knowledge-base.git
-   cd rag-knowledge-base
+   git clone https://github.com/SantoshDasari-ai/RAGApplication.git
+   cd RAGApplication
    ```
 
 2. Set up environment:
